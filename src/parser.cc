@@ -26,8 +26,10 @@ simdjson::ondemand::value::get<Type>() noexcept {
     auto value = field.value().get<Type>();
     if (value.error())
       return value.error();
-    return Type{.name = std::string(key.value()),
-                .param_type = std::make_shared<Type>(value.value())};
+    return Type{
+        .name = std::string(key.value()),
+        .param_type = std::make_shared<Type>(value.value()),
+    };
   }
   return simdjson::INCORRECT_TYPE;
 }
@@ -240,8 +242,10 @@ simdjson::ondemand::value::get<Function>() noexcept {
       if (arg_type.error())
         return arg_type.error();
 
-      function.args.push_back(Argument{.name = std::string(arg_name.value()),
-                                       .type = arg_type.value()});
+      function.args.push_back(Argument{
+          .name = std::string(arg_name.value()),
+          .type = arg_type.value(),
+      });
     }
   }
 
@@ -265,23 +269,20 @@ simdjson::ondemand::value::get<Function>() noexcept {
 
 template <>
 simdjson_inline simdjson::simdjson_result<Program>
-simdjson::ondemand::value::get<Program>() noexcept {
+simdjson::ondemand::document::get() & noexcept {
   ondemand::object obj;
-  auto error = get(obj);
-  if (error) {
+  auto error = get_object().get(obj);
+  if (error)
     return error;
-  }
 
   Program program;
   auto functions = obj["functions"].get_array();
-  if (functions.error()) {
+  if (functions.error())
     return functions.error();
-  }
   for (auto function : functions) {
     auto func = function.get<Function>();
-    if (func.error()) {
+    if (func.error())
       return func.error();
-    }
     program.functions.push_back(func.value());
   }
 
