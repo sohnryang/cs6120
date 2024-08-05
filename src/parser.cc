@@ -35,149 +35,6 @@ simdjson::ondemand::value::get<Type>() noexcept {
 }
 
 template <>
-simdjson_inline simdjson::simdjson_result<ValueOp>
-simdjson::ondemand::value::get<ValueOp>() noexcept {
-  auto obj = get_object();
-  if (obj.error())
-    return obj.error();
-
-  ValueOp op;
-  auto op_str = obj.value()["op"].get_string();
-  if (op_str.error())
-    return op_str.error();
-
-  static const std::unordered_map<std::string_view, ValueOpKind> op_map = {
-      {"add", ValueOpKind::Add},   {"mul", ValueOpKind::Mul},
-      {"sub", ValueOpKind::Sub},   {"div", ValueOpKind::Div},
-      {"eq", ValueOpKind::Eq},     {"lt", ValueOpKind::Lt},
-      {"gt", ValueOpKind::Gt},     {"le", ValueOpKind::Le},
-      {"ge", ValueOpKind::Ge},     {"not", ValueOpKind::Not},
-      {"and", ValueOpKind::And},   {"or", ValueOpKind::Or},
-      {"call", ValueOpKind::Call},
-  };
-  op.kind = op_map.at(op_str.value());
-
-  auto dest = obj.value()["dest"].get_string();
-  if (dest.error())
-    return dest.error();
-  op.dest = std::string(dest.value());
-
-  auto type = obj.value()["type"].get<Type>();
-  if (type.error())
-    return type.error();
-  op.type = type.value();
-
-  auto args = obj.value()["args"].get_array();
-  if (!args.error()) {
-    for (auto arg : args.value()) {
-      auto arg_str = arg.get_string();
-      if (arg_str.error())
-        return arg_str.error();
-      op.args.push_back(std::string(arg_str.value()));
-    }
-  }
-
-  auto funcs = obj.value()["funcs"].get_array();
-  if (!funcs.error()) {
-    for (auto func : funcs.value()) {
-      auto func_str = func.get_string();
-      if (func_str.error())
-        return func_str.error();
-      op.funcs.push_back(std::string(func_str.value()));
-    }
-  }
-
-  auto labels = obj.value()["labels"].get_array();
-  if (!labels.error()) {
-    for (auto label : labels.value()) {
-      auto label_str = label.get_string();
-      if (label_str.error())
-        return label_str.error();
-      op.labels.push_back(std::string(label_str.value()));
-    }
-  }
-
-  return op;
-}
-
-template <>
-simdjson_inline simdjson::simdjson_result<EffectOp>
-simdjson::ondemand::value::get<EffectOp>() noexcept {
-  auto obj = get_object();
-  if (obj.error())
-    return obj.error();
-
-  EffectOp op;
-  auto op_str = obj.value()["op"].get_string();
-  if (op_str.error())
-    return op_str.error();
-
-  static const std::unordered_map<std::string_view, EffectOpKind> op_map = {
-      {"jmp", EffectOpKind::Jmp},
-      {"br", EffectOpKind::Br},
-      {"call", EffectOpKind::Call},
-      {"ret", EffectOpKind::Ret},
-  };
-  op.kind = op_map.at(op_str.value());
-
-  auto args = obj.value()["args"].get_array();
-  if (!args.error()) {
-    for (auto arg : args.value()) {
-      auto arg_str = arg.get_string();
-      if (arg_str.error())
-        return arg_str.error();
-      op.args.push_back(std::string(arg_str.value()));
-    }
-  }
-
-  auto funcs = obj.value()["funcs"].get_array();
-  if (!funcs.error()) {
-    for (auto func : funcs.value()) {
-      auto func_str = func.get_string();
-      if (func_str.error())
-        return func_str.error();
-      op.funcs.push_back(std::string(func_str.value()));
-    }
-  }
-
-  auto labels = obj.value()["labels"].get_array();
-  if (!labels.error()) {
-    for (auto label : labels.value()) {
-      auto label_str = label.get_string();
-      if (label_str.error())
-        return label_str.error();
-      op.labels.push_back(std::string(label_str.value()));
-    }
-  }
-
-  return op;
-}
-template <>
-simdjson_inline simdjson::simdjson_result<Constant>
-simdjson::ondemand::value::get<Constant>() noexcept {
-  auto obj = get_object();
-  if (obj.error())
-    return obj.error();
-
-  auto type = obj.value()["type"].get_string();
-  if (type.error())
-    return type.error();
-
-  if (std::string(type.value()) == "int") {
-    auto val = obj.value()["value"].get_int64();
-    if (val.error())
-      return val.error();
-    return Constant{.value = val.value()};
-  } else if (std::string(type.value()) == "bool") {
-    auto val = obj.value()["value"].get_bool();
-    if (val.error())
-      return val.error();
-    return Constant{.value = val.value()};
-  }
-  return simdjson::INCORRECT_TYPE;
-}
-
-template <>
 simdjson_inline simdjson::simdjson_result<Instruction>
 simdjson::ondemand::value::get<Instruction>() noexcept {
   auto obj = get_object();
@@ -191,25 +48,121 @@ simdjson::ondemand::value::get<Instruction>() noexcept {
     return {Label{.name = std::string(label.value())}};
   }
 
-  auto op = obj["op"].get_string();
-  if (op.error())
-    return op.error();
+  auto op_str = obj["op"].get_string();
+  if (op_str.error())
+    return op_str.error();
 
-  if (std::string_view(op.value()) == "const") {
-    auto constant = get<Constant>();
-    if (constant.error())
-      return constant.error();
-    return {Op{constant.value()}};
+  if (std::string_view(op_str.value()) == "const") {
+    auto type = obj.value()["type"].get_string();
+    if (type.error())
+      return type.error();
+
+    if (std::string(type.value()) == "int") {
+      auto val = obj.value()["value"].get_int64();
+      if (val.error())
+        return val.error();
+      return {Constant{.value = val.value()}};
+    } else if (std::string(type.value()) == "bool") {
+      auto val = obj.value()["value"].get_bool();
+      if (val.error())
+        return val.error();
+      return {Constant{.value = val.value()}};
+    }
+    return simdjson::INCORRECT_TYPE;
   } else if (obj["dest"].error() != simdjson::error_code::NO_SUCH_FIELD) {
-    auto value_op = get<ValueOp>();
-    if (value_op.error())
-      return value_op.error();
-    return {Op{value_op.value()}};
+    ValueOp op;
+    static const std::unordered_map<std::string_view, ValueOpKind> op_map = {
+        {"add", ValueOpKind::Add},   {"mul", ValueOpKind::Mul},
+        {"sub", ValueOpKind::Sub},   {"div", ValueOpKind::Div},
+        {"eq", ValueOpKind::Eq},     {"lt", ValueOpKind::Lt},
+        {"gt", ValueOpKind::Gt},     {"le", ValueOpKind::Le},
+        {"ge", ValueOpKind::Ge},     {"not", ValueOpKind::Not},
+        {"and", ValueOpKind::And},   {"or", ValueOpKind::Or},
+        {"call", ValueOpKind::Call},
+    };
+    op.kind = op_map.at(op_str.value());
+
+    auto dest = obj.value()["dest"].get_string();
+    if (dest.error())
+      return dest.error();
+    op.dest = std::string(dest.value());
+
+    auto type = obj.value()["type"].get<Type>();
+    if (type.error())
+      return type.error();
+    op.type = type.value();
+
+    auto args = obj.value()["args"].get_array();
+    if (!args.error()) {
+      for (auto arg : args.value()) {
+        auto arg_str = arg.get_string();
+        if (arg_str.error())
+          return arg_str.error();
+        op.args.push_back(std::string(arg_str.value()));
+      }
+    }
+
+    auto funcs = obj.value()["funcs"].get_array();
+    if (!funcs.error()) {
+      for (auto func : funcs.value()) {
+        auto func_str = func.get_string();
+        if (func_str.error())
+          return func_str.error();
+        op.funcs.push_back(std::string(func_str.value()));
+      }
+    }
+
+    auto labels = obj.value()["labels"].get_array();
+    if (!labels.error()) {
+      for (auto label : labels.value()) {
+        auto label_str = label.get_string();
+        if (label_str.error())
+          return label_str.error();
+        op.labels.push_back(std::string(label_str.value()));
+      }
+    }
+
+    return {Op{op}};
   } else {
-    auto effect_op = get<EffectOp>();
-    if (effect_op.error())
-      return effect_op.error();
-    return {Op{effect_op.value()}};
+    EffectOp op;
+    static const std::unordered_map<std::string_view, EffectOpKind> op_map = {
+        {"jmp", EffectOpKind::Jmp},     {"br", EffectOpKind::Br},
+        {"call", EffectOpKind::Call},   {"ret", EffectOpKind::Ret},
+        {"print", EffectOpKind::Print},
+    };
+    op.kind = op_map.at(op_str.value());
+
+    auto args = obj.value()["args"].get_array();
+    if (!args.error()) {
+      for (auto arg : args.value()) {
+        auto arg_str = arg.get_string();
+        if (arg_str.error())
+          return arg_str.error();
+        op.args.push_back(std::string(arg_str.value()));
+      }
+    }
+
+    auto funcs = obj.value()["funcs"].get_array();
+    if (!funcs.error()) {
+      for (auto func : funcs.value()) {
+        auto func_str = func.get_string();
+        if (func_str.error())
+          return func_str.error();
+        op.funcs.push_back(std::string(func_str.value()));
+      }
+    }
+
+    auto labels = obj.value()["labels"].get_array();
+    if (!labels.error()) {
+      for (auto label : labels.value()) {
+        auto label_str = label.get_string();
+        if (label_str.error())
+          return label_str.error();
+        op.labels.push_back(std::string(label_str.value()));
+      }
+    }
+
+    return {Op{op}};
   }
 }
 
