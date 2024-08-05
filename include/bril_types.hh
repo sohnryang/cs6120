@@ -49,6 +49,7 @@ enum class EffectOpKind {
   Br,
   Call,
   Ret,
+  Print,
 };
 
 struct EffectOp {
