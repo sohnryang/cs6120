@@ -7,11 +7,10 @@
 using nlohmann::json;
 
 void to_json(json &j, const Type &t) {
-  if (t.param_type) {
+  if (t.param_type)
     j = json{{t.name, *t.param_type}};
-  } else {
+  else
     j = t.name;
-  }
 }
 
 void from_json(const json &j, Type &t) {
@@ -133,13 +132,12 @@ void to_json(json &j, const Op &op) {
 }
 
 void from_json(const json &j, Op &op) {
-  if (j["op"] == "const") {
+  if (j["op"] == "const")
     op = j.get<Constant>();
-  } else if (j.contains("dest")) {
+  else if (j.contains("dest"))
     op = j.get<ValueOp>();
-  } else {
+  else
     op = j.get<EffectOp>();
-  }
 }
 
 void to_json(json &j, const Argument &arg) {
@@ -156,11 +154,10 @@ void to_json(json &j, const Instruction &instr) {
 }
 
 void from_json(const json &j, Instruction &instr) {
-  if (j.contains("label")) {
+  if (j.contains("label"))
     instr = j.get<Label>();
-  } else {
+  else
     instr = j.get<Op>();
-  }
 }
 
 void to_json(json &j, const Function &func) {
@@ -176,11 +173,10 @@ void from_json(const json &j, Function &func) {
   j["name"].get_to(func.name);
   if (j.contains("args"))
     j["args"].get_to(func.args);
-  if (j.contains("type")) {
+  if (j.contains("type"))
     func.return_type = j["type"].get<Type>();
-  } else {
+  else
     func.return_type = std::nullopt;
-  }
   j["instrs"].get_to(func.instrs);
 }
 
