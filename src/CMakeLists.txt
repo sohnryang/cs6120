@@ -7,12 +7,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fmt)
 
 FetchContent_Declare(
-  simdjson
-  GIT_REPOSITORY https://github.com/simdjson/simdjson.git
-  GIT_SHALLOW TRUE
-  GIT_TAG v3.10.0)
-FetchContent_MakeAvailable(simdjson)
+  json
+  URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+FetchContent_MakeAvailable(json)
 
-add_library(parser parser.cc)
-target_include_directories(parser PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(parser PRIVATE simdjson)
+add_library(bril_types bril_types.cc)
+target_include_directories(bril_types PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_link_libraries(bril_types PUBLIC nlohmann_json::nlohmann_json PRIVATE fmt::fmt)
