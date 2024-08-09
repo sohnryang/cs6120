@@ -95,6 +95,12 @@ void from_json(const nlohmann::json &j, Constant &c);
 
 using Op = std::variant<ValueOp, EffectOp, Constant>;
 
+std::optional<ValueOp> try_op_into_value_op(const Op &op);
+
+std::optional<EffectOp> try_op_into_effect_op(const Op &op);
+
+std::optional<Constant> try_op_into_constant(const Op &op);
+
 void to_json(nlohmann::json &j, const Op &op);
 
 void from_json(const nlohmann::json &j, Op &op);
@@ -109,6 +115,10 @@ void to_json(nlohmann::json &j, const Argument &arg);
 void from_json(const nlohmann::json &j, Argument &arg);
 
 using Instruction = std::variant<Op, Label>;
+
+std::optional<Op> try_instr_into_op(const Instruction &instr);
+
+std::optional<Label> try_instr_into_label(const Instruction &instr);
 
 void to_json(nlohmann::json &j, const Instruction &instr);
 

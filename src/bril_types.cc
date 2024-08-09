@@ -1,8 +1,11 @@
 #include "bril_types.hh"
+#include "utils.hh"
 
-#include "nlohmann/json.hpp"
+#include <optional>
+#include <variant>
 
 #include "fmt/format.h"
+#include "nlohmann/json.hpp"
 
 using nlohmann::json;
 
@@ -127,6 +130,33 @@ void from_json(const nlohmann::json &j, Constant &c) {
         fmt::format("Invalid constant type: {}", std::string(type_name)));
 }
 
+std::optional<ValueOp> try_op_into_value_op(const Op &op) {
+  return std::visit(
+      match{
+          [](const ValueOp &value_op) { return std::optional{value_op}; },
+          [](auto) { return std::optional<ValueOp>{}; },
+      },
+      op);
+}
+
+std::optional<EffectOp> try_op_into_effect_op(const Op &op) {
+  return std::visit(
+      match{
+          [](const EffectOp &effect_op) { return std::optional{effect_op}; },
+          [](auto) { return std::optional<EffectOp>{}; },
+      },
+      op);
+}
+
+std::optional<Constant> try_op_into_constant(const Op &op) {
+  return std::visit(
+      match{
+          [](const Constant &constant) { return std::optional{constant}; },
+          [](auto) { return std::optional<Constant>{}; },
+      },
+      op);
+}
+
 void to_json(json &j, const Op &op) {
   std::visit([&j](auto &&arg) { to_json(j, arg); }, op);
 }
@@ -158,6 +188,22 @@ void from_json(const json &j, Instruction &instr) {
     instr = j.get<Label>();
   else
     instr = j.get<Op>();
+}
+
+std::optional<Op> try_instr_into_op(const Instruction &instr) {
+  return std::visit(match{
+                        [](const Op &op) { return std::optional{op}; },
+                        [](auto) { return std::optional<Op>{}; },
+                    },
+                    instr);
+}
+
+std::optional<Label> try_instr_into_label(const Instruction &instr) {
+  return std::visit(match{
+                        [](const Label &label) { return std::optional{label}; },
+                        [](auto) { return std::optional<Label>{}; },
+                    },
+                    instr);
 }
 
 void to_json(json &j, const Function &func) {
