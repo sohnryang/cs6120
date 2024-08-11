@@ -19,8 +19,7 @@ enum class DefinitionState {
   Overwritten,
 };
 
-ControlFlowGraph
-LocalDeadCodeElimination::operator()(const ControlFlowGraph &cfg) const {
+ControlFlowGraph optimize_single_step(const ControlFlowGraph &cfg) {
   std::vector<BasicBlock> blocks;
 
   for (const auto &block : cfg.blocks) {
@@ -108,4 +107,15 @@ LocalDeadCodeElimination::operator()(const ControlFlowGraph &cfg) const {
     });
   }
   return {.blocks = blocks, .successors = cfg.successors};
+}
+
+ControlFlowGraph
+LocalDeadCodeElimination::operator()(const ControlFlowGraph &cfg) const {
+  auto last = cfg;
+  while (true) {
+    const auto optimized = optimize_single_step(last);
+    if (optimized == last)
+      return optimized;
+    last = optimized;
+  }
 }
