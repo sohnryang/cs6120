@@ -1,5 +1,9 @@
 #pragma once
 
+#include "utils.hh"
+
+#include <cstddef>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,11 +16,19 @@ struct ValueOp;
 struct EffectOp;
 struct Label;
 
+template <> struct std::hash<std::vector<std::string>> {
+  std::size_t operator()(const std::vector<std::string> &vec) const;
+};
+
 struct Type {
   std::string name;
   std::shared_ptr<Type> param_type;
 
   bool operator==(const Type &other) const;
+};
+
+template <> struct std::hash<Type> {
+  std::size_t operator()(const Type &type) const;
 };
 
 void to_json(nlohmann::json &j, const Type &type);
@@ -28,6 +40,8 @@ struct Label {
 
   bool operator==(const Label &) const = default;
 };
+
+MAKE_HASHABLE(Label, t.name)
 
 void to_json(nlohmann::json &j, const Label &l);
 
@@ -61,6 +75,8 @@ struct ValueOp {
   bool operator==(const ValueOp &) const = default;
 };
 
+MAKE_HASHABLE(ValueOp, t.kind, t.args, t.funcs, t.labels, t.dest, t.type);
+
 void to_json(nlohmann::json &j, const ValueOp &op);
 
 void from_json(const nlohmann::json &j, ValueOp &op);
@@ -82,6 +98,8 @@ struct EffectOp {
   bool operator==(const EffectOp &) const = default;
 };
 
+MAKE_HASHABLE(EffectOp, t.kind, t.args, t.funcs, t.labels)
+
 void to_json(nlohmann::json &j, const EffectOp &op);
 
 void from_json(const nlohmann::json &j, EffectOp &op);
@@ -99,6 +117,8 @@ struct Constant {
       return {.name = "bool", .param_type = nullptr};
   };
 };
+
+MAKE_HASHABLE(Constant, t.value, t.dest);
 
 void to_json(nlohmann::json &j, const Constant &c);
 
