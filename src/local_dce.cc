@@ -23,11 +23,11 @@ ControlFlowGraph optimize_single_step(const ControlFlowGraph &cfg) {
   std::vector<BasicBlock> blocks;
 
   for (const auto &block : cfg.blocks) {
-    std::vector<DefinitionState> definition_states(block.instrs.size(),
+    std::vector<DefinitionState> definition_states(block.ops.size(),
                                                    DefinitionState::Unused);
     std::unordered_map<std::string, std::size_t> definition_locations;
-    for (std::size_t i = 0; i < block.instrs.size(); i++) {
-      const auto &instr = block.instrs[i];
+    for (std::size_t i = 0; i < block.ops.size(); i++) {
+      const auto &op = block.ops[i];
 
       std::optional<std::reference_wrapper<const std::vector<std::string>>>
           args;
@@ -42,7 +42,7 @@ ControlFlowGraph optimize_single_step(const ControlFlowGraph &cfg) {
                      },
                      [&](const Constant &constant) { dest = constant.dest; },
                  },
-                 instr);
+                 op);
 
       if (args.has_value())
         for (const auto &arg : (*args).get()) {
@@ -77,9 +77,9 @@ ControlFlowGraph optimize_single_step(const ControlFlowGraph &cfg) {
       }
     }
 
-    std::vector<Op> instrs;
-    for (std::size_t i = 0; i < block.instrs.size(); i++) {
-      const auto &instr = block.instrs[i];
+    std::vector<Op> ops;
+    for (std::size_t i = 0; i < block.ops.size(); i++) {
+      const auto &op = block.ops[i];
 
       const auto is_dead = std::visit(
           match{
@@ -93,16 +93,16 @@ ControlFlowGraph optimize_single_step(const ControlFlowGraph &cfg) {
                 return definition_states[i] == DefinitionState::Overwritten;
               },
           },
-          instr);
+          op);
       if (is_dead)
         continue;
 
-      instrs.push_back(instr);
+      ops.push_back(op);
     }
 
     blocks.push_back({
         .name = block.name,
-        .instrs = instrs,
+        .ops = ops,
         .terminator = block.terminator,
     });
   }

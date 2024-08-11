@@ -11,7 +11,7 @@
 #include "fmt/format.h"
 
 ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
-  std::vector<Op> instrs;
+  std::vector<Op> ops;
   std::vector<BasicBlock> blocks;
   std::optional<std::string> current_block_label;
   std::unordered_map<std::string, std::size_t> label_to_id;
@@ -29,7 +29,7 @@ ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
     std::optional<EffectOp> terminator;
     std::optional<std::string> next_label;
     if (op.has_value()) {
-      instrs.push_back(*op);
+      ops.push_back(*op);
       const auto effect_op = try_op_into_effect_op(*op);
       if (!effect_op.has_value() ||
           !TERMINATOR_OP_KIND.contains(effect_op->kind))
@@ -38,28 +38,28 @@ ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
     } else
       next_label = label->name;
 
-    if (!current_block_label.has_value() && instrs.empty()) {
+    if (!current_block_label.has_value() && ops.empty()) {
       current_block_label = next_label;
       continue;
     }
 
     blocks.push_back({
         .name = name,
-        .instrs = instrs,
+        .ops = ops,
         .terminator = terminator,
     });
     label_to_id[name] = block_id;
-    instrs.clear();
+    ops.clear();
     current_block_label = next_label;
   }
 
-  if (current_block_label.has_value() || !instrs.empty()) {
+  if (current_block_label.has_value() || !ops.empty()) {
     const auto block_id = blocks.size();
     const auto name = current_block_label.value_or(
         fmt::format("{}.{}", function.name, block_id));
     blocks.push_back({
         .name = name,
-        .instrs = instrs,
+        .ops = ops,
         .terminator = {},
     });
     label_to_id[name] = block_id;
@@ -97,8 +97,8 @@ std::vector<Instruction> ControlFlowGraph::into_instrs() const {
   std::vector<Instruction> instrs;
   for (const auto &block : blocks) {
     instrs.push_back(Label{.name = block.name});
-    for (const auto &instr : block.instrs)
-      instrs.push_back(instr);
+    for (const auto &op : block.ops)
+      instrs.push_back(op);
   }
   return instrs;
 }

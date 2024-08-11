@@ -10,7 +10,7 @@
 
 struct BasicBlock {
   std::string name;
-  std::vector<Op> instrs;
+  std::vector<Op> ops;
   std::optional<EffectOp> terminator;
 
   bool operator==(const BasicBlock &) const = default;
