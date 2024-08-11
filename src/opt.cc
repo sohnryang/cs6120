@@ -19,7 +19,9 @@
 using json = nlohmann::json;
 
 static const std::unordered_map<std::string, std::shared_ptr<OptimizationPass>>
-    PASSES = {};
+    PASSES = {
+        {"dead_code_elimination", std::make_shared<DeadCodeElimination>()},
+};
 
 int main(int argc, char *argv[]) {
   argparse::ArgumentParser parser("opt");

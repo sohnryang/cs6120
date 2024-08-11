@@ -26,9 +26,9 @@ add_library(analysis cfg.cc)
 target_include_directories(analysis PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(analysis PUBLIC bril_types PRIVATE fmt::fmt)
 
-add_library(pass pass.cc)
+add_library(pass pass.cc dead_code.cc)
 target_include_directories(pass PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(pass PUBLIC analysis)
+target_link_libraries(pass PUBLIC analysis PRIVATE fmt::fmt)
 
 add_executable(opt opt.cc)
 target_include_directories(opt PRIVATE "${PROJECT_SOURCE_DIR}/include")
