@@ -90,5 +90,5 @@ ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
       successors[i] = {i + 1};
   }
 
-  return {.blocks = blocks, .successors = successors};
+  return {.args = function.args, .blocks = blocks, .successors = successors};
 }

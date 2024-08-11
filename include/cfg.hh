@@ -15,6 +15,7 @@ struct BasicBlock {
 };
 
 struct ControlFlowGraph {
+  std::vector<Argument> args;
   std::vector<BasicBlock> blocks;
   std::unordered_map<std::size_t, std::vector<std::size_t>> successors;
 
