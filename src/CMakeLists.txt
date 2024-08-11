@@ -12,6 +12,12 @@ FetchContent_Declare(
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
 FetchContent_MakeAvailable(json)
 
+FetchContent_Declare(
+  argparse
+  GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+  GIT_TAG v3.1)
+FetchContent_MakeAvailable(argparse)
+
 add_library(bril_types bril_types.cc)
 target_include_directories(bril_types PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(bril_types PUBLIC nlohmann_json::nlohmann_json PRIVATE fmt::fmt)
