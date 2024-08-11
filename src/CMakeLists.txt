@@ -25,3 +25,7 @@ target_link_libraries(bril_types PUBLIC nlohmann_json::nlohmann_json PRIVATE fmt
 add_library(analysis cfg.cc)
 target_include_directories(analysis PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(analysis PUBLIC bril_types PRIVATE fmt::fmt)
+
+add_library(pass pass.cc)
+target_include_directories(pass PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_link_libraries(pass PUBLIC analysis)
