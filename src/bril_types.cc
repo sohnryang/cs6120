@@ -9,6 +9,14 @@
 
 using nlohmann::json;
 
+bool Type::operator==(const Type &other) const {
+  if (name != other.name)
+    return false;
+  if (param_type == nullptr || other.param_type == nullptr)
+    return param_type == other.param_type;
+  return *param_type == *other.param_type;
+}
+
 void to_json(json &j, const Type &t) {
   if (t.param_type)
     j = json{{t.name, *t.param_type}};

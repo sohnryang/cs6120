@@ -15,6 +15,8 @@ struct Label;
 struct Type {
   std::string name;
   std::shared_ptr<Type> param_type;
+
+  bool operator==(const Type &other) const;
 };
 
 void to_json(nlohmann::json &j, const Type &type);
@@ -23,6 +25,8 @@ void from_json(const nlohmann::json &j, Type &type);
 
 struct Label {
   std::string name;
+
+  bool operator==(const Label &) const = default;
 };
 
 void to_json(nlohmann::json &j, const Label &l);
@@ -53,6 +57,8 @@ struct ValueOp {
   std::vector<std::string> labels;
   std::string dest;
   Type type;
+
+  bool operator==(const ValueOp &) const = default;
 };
 
 void to_json(nlohmann::json &j, const ValueOp &op);
@@ -72,6 +78,8 @@ struct EffectOp {
   std::vector<std::string> args;
   std::vector<std::string> funcs;
   std::vector<std::string> labels;
+
+  bool operator==(const EffectOp &) const = default;
 };
 
 void to_json(nlohmann::json &j, const EffectOp &op);
@@ -81,6 +89,8 @@ void from_json(const nlohmann::json &j, EffectOp &op);
 struct Constant {
   std::variant<int64_t, bool> value;
   std::string dest;
+
+  bool operator==(const Constant &) const = default;
 
   inline Type type() const {
     if (value.index() == 0)
@@ -109,6 +119,8 @@ void from_json(const nlohmann::json &j, Op &op);
 struct Argument {
   std::string name;
   Type type;
+
+  bool operator==(const Argument &) const = default;
 };
 
 void to_json(nlohmann::json &j, const Argument &arg);
@@ -130,6 +142,8 @@ struct Function {
   std::vector<Argument> args;
   std::optional<Type> return_type;
   std::vector<Instruction> instrs;
+
+  bool operator==(const Function &) const = default;
 };
 
 void to_json(nlohmann::json &j, const Function &func);
@@ -138,6 +152,8 @@ void from_json(const nlohmann::json &j, Function &func);
 
 struct Program {
   std::vector<Function> functions;
+
+  bool operator==(const Program &) const = default;
 };
 
 void to_json(nlohmann::json &j, const Program &prog);
