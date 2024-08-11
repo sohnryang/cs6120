@@ -37,13 +37,13 @@ void from_json(const json &j, Label &l) {
 
 void to_json(json &j, const ValueOp &op) {
   static const std::unordered_map<ValueOpKind, std::string> op_map = {
-      {ValueOpKind::Add, "add"},  {ValueOpKind::Mul, "mul"},
-      {ValueOpKind::Sub, "sub"},  {ValueOpKind::Div, "div"},
-      {ValueOpKind::Eq, "eq"},    {ValueOpKind::Lt, "lt"},
-      {ValueOpKind::Gt, "gt"},    {ValueOpKind::Le, "le"},
-      {ValueOpKind::Ge, "ge"},    {ValueOpKind::Not, "not"},
-      {ValueOpKind::And, "and"},  {ValueOpKind::Or, "or"},
-      {ValueOpKind::Call, "call"}};
+      {ValueOpKind::Add, "add"},   {ValueOpKind::Mul, "mul"},
+      {ValueOpKind::Sub, "sub"},   {ValueOpKind::Div, "div"},
+      {ValueOpKind::Eq, "eq"},     {ValueOpKind::Lt, "lt"},
+      {ValueOpKind::Gt, "gt"},     {ValueOpKind::Le, "le"},
+      {ValueOpKind::Ge, "ge"},     {ValueOpKind::Not, "not"},
+      {ValueOpKind::And, "and"},   {ValueOpKind::Or, "or"},
+      {ValueOpKind::Call, "call"}, {ValueOpKind::Id, "id"}};
 
   j["op"] = op_map.at(op.kind);
   j["dest"] = op.dest;
@@ -58,13 +58,13 @@ void to_json(json &j, const ValueOp &op) {
 
 void from_json(const json &j, ValueOp &op) {
   static const std::unordered_map<std::string, ValueOpKind> op_map = {
-      {"add", ValueOpKind::Add},  {"mul", ValueOpKind::Mul},
-      {"sub", ValueOpKind::Sub},  {"div", ValueOpKind::Div},
-      {"eq", ValueOpKind::Eq},    {"lt", ValueOpKind::Lt},
-      {"gt", ValueOpKind::Gt},    {"le", ValueOpKind::Le},
-      {"ge", ValueOpKind::Ge},    {"not", ValueOpKind::Not},
-      {"and", ValueOpKind::And},  {"or", ValueOpKind::Or},
-      {"call", ValueOpKind::Call}};
+      {"add", ValueOpKind::Add},   {"mul", ValueOpKind::Mul},
+      {"sub", ValueOpKind::Sub},   {"div", ValueOpKind::Div},
+      {"eq", ValueOpKind::Eq},     {"lt", ValueOpKind::Lt},
+      {"gt", ValueOpKind::Gt},     {"le", ValueOpKind::Le},
+      {"ge", ValueOpKind::Ge},     {"not", ValueOpKind::Not},
+      {"and", ValueOpKind::And},   {"or", ValueOpKind::Or},
+      {"call", ValueOpKind::Call}, {"id", ValueOpKind::Id}};
 
   op.kind = op_map.at(j["op"].get<std::string>());
   op.dest = j["dest"].get<std::string>();

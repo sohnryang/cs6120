@@ -43,6 +43,7 @@ enum class ValueOpKind {
   And,
   Or,
   Call,
+  Id,
 };
 
 struct ValueOp {
