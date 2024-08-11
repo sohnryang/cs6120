@@ -1,4 +1,4 @@
-#include "dead_code.hh"
+#include "local_dce.hh"
 #include "bril_types.hh"
 #include "cfg.hh"
 #include "utils.hh"
@@ -20,7 +20,7 @@ enum class DefinitionState {
 };
 
 ControlFlowGraph
-DeadCodeElimination::operator()(const ControlFlowGraph &cfg) const {
+LocalDeadCodeElimination::operator()(const ControlFlowGraph &cfg) const {
   std::vector<BasicBlock> blocks;
 
   for (const auto &block : cfg.blocks) {

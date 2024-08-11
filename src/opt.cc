@@ -1,6 +1,6 @@
 #include "bril_types.hh"
 #include "cfg.hh"
-#include "dead_code.hh"
+#include "local_dce.hh"
 #include "pass.hh"
 
 #include <cstdlib>
@@ -20,7 +20,7 @@ using json = nlohmann::json;
 
 static const std::unordered_map<std::string, std::shared_ptr<OptimizationPass>>
     PASSES = {
-        {"dead_code_elimination", std::make_shared<DeadCodeElimination>()},
+        {"local_dce", std::make_shared<LocalDeadCodeElimination>()},
 };
 
 int main(int argc, char *argv[]) {
