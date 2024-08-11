@@ -29,3 +29,7 @@ target_link_libraries(analysis PUBLIC bril_types PRIVATE fmt::fmt)
 add_library(pass pass.cc)
 target_include_directories(pass PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(pass PUBLIC analysis)
+
+add_executable(opt opt.cc)
+target_include_directories(opt PRIVATE "${PROJECT_SOURCE_DIR}/include")
+target_link_libraries(opt PRIVATE pass PRIVATE fmt::fmt PRIVATE argparse)
