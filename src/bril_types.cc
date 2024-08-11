@@ -1,26 +1,13 @@
 #include "bril_types.hh"
 #include "utils.hh"
 
-#include <cstddef>
-#include <functional>
-#include <memory>
 #include <optional>
-#include <string>
 #include <variant>
-#include <vector>
 
 #include "fmt/format.h"
 #include "nlohmann/json.hpp"
 
 using nlohmann::json;
-
-std::size_t std::hash<std::vector<std::string>>::operator()(
-    const std::vector<std::string> &vec) const {
-  std::size_t res = vec.size();
-  for (const auto &elem : vec)
-    hash_combine(res, elem);
-  return res;
-}
 
 bool Type::operator==(const Type &other) const {
   if (name != other.name)
@@ -28,13 +15,6 @@ bool Type::operator==(const Type &other) const {
   if (param_type == nullptr || other.param_type == nullptr)
     return param_type == other.param_type;
   return *param_type == *other.param_type;
-}
-
-std::size_t std::hash<Type>::operator()(const Type &type) const {
-  auto res = std::hash<std::string>{}(type.name);
-  if (type.param_type != nullptr)
-    hash_combine(res, *type.param_type);
-  return res;
 }
 
 void to_json(json &j, const Type &t) {
