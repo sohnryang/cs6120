@@ -92,3 +92,13 @@ ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
 
   return {.args = function.args, .blocks = blocks, .successors = successors};
 }
+
+std::vector<Instruction> ControlFlowGraph::into_instrs() const {
+  std::vector<Instruction> instrs;
+  for (const auto &block : blocks) {
+    instrs.push_back(Label{.name = block.name});
+    for (const auto &instr : block.instrs)
+      instrs.push_back(instr);
+  }
+  return instrs;
+}
