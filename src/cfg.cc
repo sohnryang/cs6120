@@ -88,7 +88,8 @@ ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
         successors[i] = {};
         break;
       default:
-        throw std::runtime_error("");
+        throw std::runtime_error(fmt::format(
+            "Invalid terminator kind: {}", fmt::underlying(terminator->kind)));
       }
     } else if (i < blocks.size() - 1) {
       successors[i] = {i + 1};
