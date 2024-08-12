@@ -64,8 +64,8 @@ ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
     label_to_id[name] = block_id;
   }
 
-  std::unordered_map<std::size_t, std::vector<std::size_t>> successors,
-      predecessors;
+  std::vector<std::vector<std::size_t>> successors(blocks.size()),
+      predecessors(blocks.size());
   for (std::size_t i = 0; i < blocks.size(); i++) {
     const auto &terminator = blocks[i].terminator;
     if (terminator.has_value()) {

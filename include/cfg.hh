@@ -19,8 +19,8 @@ struct BasicBlock {
 struct ControlFlowGraph {
   std::vector<Argument> args;
   std::vector<BasicBlock> blocks;
-  std::unordered_map<std::size_t, std::vector<std::size_t>> successors;
-  std::unordered_map<std::size_t, std::vector<std::size_t>> predecessors;
+  std::vector<std::vector<std::size_t>> successors;
+  std::vector<std::vector<std::size_t>> predecessors;
   std::unordered_map<std::string, std::size_t> label_to_id;
 
   bool operator==(const ControlFlowGraph &) const = default;
