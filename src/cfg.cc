@@ -15,7 +15,6 @@ ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
   std::vector<BasicBlock> blocks;
   std::optional<std::string> current_block_label;
   std::unordered_map<std::string, std::size_t> label_to_id;
-  std::unordered_map<std::size_t, std::vector<std::size_t>> successors;
   static const std::unordered_set<EffectOpKind> TERMINATOR_OP_KIND = {
       EffectOpKind::Jmp, EffectOpKind::Br, EffectOpKind::Ret};
 
@@ -65,32 +64,46 @@ ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
     label_to_id[name] = block_id;
   }
 
+  std::unordered_map<std::size_t, std::vector<std::size_t>> successors,
+      predecessors;
   for (std::size_t i = 0; i < blocks.size(); i++) {
     const auto &terminator = blocks[i].terminator;
     if (terminator.has_value()) {
       switch (terminator->kind) {
-      case EffectOpKind::Jmp:
-        successors[i] = {label_to_id.at(terminator->labels[0])};
+      case EffectOpKind::Jmp: {
+        const auto dest_id = label_to_id.at(terminator->labels[0]);
+        successors[i] = {dest_id};
+        predecessors[dest_id].push_back(i);
         break;
-      case EffectOpKind::Br:
-        successors[i] = {
-            label_to_id.at(terminator->labels[0]),
-            label_to_id.at(terminator->labels[1]),
-        };
+      }
+      case EffectOpKind::Br: {
+        const auto dest_id1 = label_to_id.at(terminator->labels[0]),
+                   dest_id2 = label_to_id.at(terminator->labels[1]);
+        successors[i] = {dest_id1, dest_id2};
+        predecessors[dest_id1].push_back(i);
+        predecessors[dest_id2].push_back(i);
         break;
+      }
       case EffectOpKind::Ret:
         successors[i] = {};
         break;
       default:
         throw std::runtime_error("");
       }
-    } else if (i == blocks.size() - 1)
-      successors[i] = {};
-    else
+    } else if (i < blocks.size() - 1) {
       successors[i] = {i + 1};
+      predecessors[i + 1].push_back(i);
+    } else
+      successors[i] = {};
   }
 
-  return {.args = function.args, .blocks = blocks, .successors = successors};
+  return {
+      .args = function.args,
+      .blocks = blocks,
+      .successors = successors,
+      .predecessors = predecessors,
+      .label_to_id = label_to_id,
+  };
 }
 
 std::vector<Instruction> ControlFlowGraph::into_instrs() const {
