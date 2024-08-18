@@ -1,5 +1,6 @@
 #include "bril_types.hh"
 #include "cfg.hh"
+#include "dump_cfg.hh"
 #include "local_dce.hh"
 #include "pass.hh"
 
@@ -22,6 +23,7 @@ using json = nlohmann::json;
 static const std::unordered_map<std::string, Pass<ControlFlowGraph>>
     CFG_PASSES = {
         {"local_dce", std::make_shared<LocalDeadCodeElimination>()},
+        {"dump_cfg", std::make_shared<DumpControlFlowGraph>()},
 };
 
 int main(int argc, char *argv[]) {

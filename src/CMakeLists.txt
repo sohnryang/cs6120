@@ -22,7 +22,7 @@ add_library(bril_types bril_types.cc)
 target_include_directories(bril_types PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(bril_types PUBLIC nlohmann_json::nlohmann_json PRIVATE fmt::fmt)
 
-add_library(analysis cfg.cc local_dce.cc)
+add_library(analysis cfg.cc local_dce.cc dump_cfg.cc)
 target_include_directories(analysis PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(analysis PUBLIC bril_types PRIVATE fmt::fmt)
 
