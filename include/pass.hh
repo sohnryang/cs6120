@@ -1,27 +1,39 @@
 #pragma once
 
-#include "cfg.hh"
-
 #include <memory>
 #include <vector>
 
-class OptimizationPass {
+template <class T> class TransformPass {
 public:
-  virtual ControlFlowGraph operator()(const ControlFlowGraph &) const = 0;
+  virtual T operator()(const T &) const = 0;
 };
 
-class PassRunner {
+template <class T> class TransformPassRunner {
 private:
-  std::vector<std::shared_ptr<OptimizationPass>> _passes;
+  std::vector<std::shared_ptr<TransformPass<T>>> _passes;
 
 public:
-  PassRunner() = default;
-  PassRunner(const PassRunner &) = default;
-  PassRunner(PassRunner &&) = default;
-  PassRunner &operator=(const PassRunner &) = default;
-  PassRunner &operator=(PassRunner &&) = default;
+  TransformPassRunner() = default;
+  TransformPassRunner(const TransformPassRunner &) = default;
+  TransformPassRunner(TransformPassRunner &&) = default;
+  TransformPassRunner &operator=(const TransformPassRunner &) = default;
+  TransformPassRunner &operator=(TransformPassRunner &&) = default;
 
-  PassRunner(const std::vector<std::shared_ptr<OptimizationPass>> &passes);
+  TransformPassRunner(
+      const std::vector<std::shared_ptr<TransformPass<T>>> &passes);
 
-  ControlFlowGraph run_passes(const ControlFlowGraph &cfg) const;
+  T run_passes(const T &cfg) const;
 };
+
+template <class T>
+TransformPassRunner<T>::TransformPassRunner(
+    const std::vector<std::shared_ptr<TransformPass<T>>> &passes)
+    : _passes(passes) {}
+
+template <class T>
+T TransformPassRunner<T>::run_passes(const T &pass_input) const {
+  auto transformed = pass_input;
+  for (const auto &pass : _passes)
+    transformed = (*pass)(transformed);
+  return transformed;
+}

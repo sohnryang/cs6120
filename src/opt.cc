@@ -18,7 +18,8 @@
 
 using json = nlohmann::json;
 
-static const std::unordered_map<std::string, std::shared_ptr<OptimizationPass>>
+static const std::unordered_map<
+    std::string, std::shared_ptr<TransformPass<ControlFlowGraph>>>
     PASSES = {
         {"local_dce", std::make_shared<LocalDeadCodeElimination>()},
 };
@@ -35,10 +36,10 @@ int main(int argc, char *argv[]) {
     std::exit(1);
   }
 
-  std::vector<std::shared_ptr<OptimizationPass>> passes;
+  std::vector<std::shared_ptr<TransformPass<ControlFlowGraph>>> passes;
   for (const auto &pass_name : pass_names)
     passes.push_back(PASSES.at(pass_name));
-  PassRunner runner(passes);
+  TransformPassRunner runner(passes);
 
   json j;
   std::cin >> j;
