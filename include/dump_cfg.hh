@@ -10,12 +10,6 @@ private:
   ControlFlowGraph _cfg;
 
 public:
-  DumpControlFlowGraph() = default;
-  DumpControlFlowGraph(const DumpControlFlowGraph &) = default;
-  DumpControlFlowGraph(DumpControlFlowGraph &&) = default;
-  DumpControlFlowGraph &operator=(const DumpControlFlowGraph &) = default;
-  DumpControlFlowGraph &operator=(DumpControlFlowGraph &&) = default;
-
   void operator()(const ControlFlowGraph &cfg) override;
 
   nlohmann::json serialized_result() override;
