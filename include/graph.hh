@@ -27,3 +27,7 @@ struct SparseGraph {
   from_dense(const DenseGraph &dense_graph,
              const std::unordered_set<std::size_t> &vertices);
 };
+
+template <> struct std::hash<SparseGraph> {
+  std::size_t operator()(const SparseGraph &sparse_graph) const;
+};
