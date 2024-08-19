@@ -28,3 +28,10 @@ inline void hash_combine(std::size_t &seed, const T &v, Ts... rest) {
     }                                                                          \
   };                                                                           \
   }
+
+#define MAKE_HASHABLE_IMPL(type, ...)                                          \
+  std::size_t std::hash<type>::operator()(const type &t) const {               \
+    std::size_t ret = 0;                                                       \
+    hash_combine(ret, __VA_ARGS__);                                            \
+    return ret;                                                                \
+  }
