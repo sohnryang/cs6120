@@ -1,5 +1,6 @@
 #include "bril_types.hh"
 #include "cfg.hh"
+#include "dom.hh"
 #include "dump_cfg.hh"
 #include "local_dce.hh"
 #include "pass.hh"
@@ -24,6 +25,7 @@ static const std::unordered_map<std::string, Pass<ControlFlowGraph>>
     CFG_PASSES = {
         {"local_dce", std::make_shared<LocalDeadCodeElimination>()},
         {"dump_cfg", std::make_shared<DumpControlFlowGraph>()},
+        {"dom", std::make_shared<DominatorAnalysis>()},
 };
 
 int main(int argc, char *argv[]) {

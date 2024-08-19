@@ -116,31 +116,3 @@ std::vector<Instruction> ControlFlowGraph::into_instrs() const {
   }
   return instrs;
 }
-
-// TODO: use more efficient algorithm
-std::vector<std::unordered_set<std::size_t>>
-ControlFlowGraph::dominators() const {
-  std::vector<std::unordered_set<std::size_t>> res(blocks.size());
-  std::unordered_set<std::size_t> universe;
-  for (std::size_t i = 0; i < blocks.size(); i++)
-    universe.insert(i);
-  res[0] = {0};
-  for (std::size_t v = 1; v < blocks.size(); v++)
-    res[v] = universe;
-
-  while (true) {
-    auto updated = res;
-    for (std::size_t v = 1; v < blocks.size(); v++) {
-      auto updated_set = universe;
-      for (const auto p : predecessors[v])
-        std::erase_if(updated_set,
-                      [&](const auto u) { return !updated[p].contains(u); });
-      updated_set.insert(v);
-      updated[v] = updated_set;
-    }
-
-    if (updated == res)
-      return res;
-    res = updated;
-  }
-}

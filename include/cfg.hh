@@ -6,7 +6,6 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 struct BasicBlock {
@@ -29,6 +28,4 @@ struct ControlFlowGraph {
   static ControlFlowGraph from_function(const Function &function);
 
   std::vector<Instruction> into_instrs() const;
-
-  std::vector<std::unordered_set<std::size_t>> dominators() const;
 };
