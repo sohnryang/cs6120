@@ -20,7 +20,7 @@ void DominatorAnalysis::operator()(const ControlFlowGraph &cfg) {
     auto updated = _dominators;
     for (std::size_t v = 1; v < cfg.blocks.size(); v++) {
       auto updated_set = universe;
-      for (const auto p : cfg.predecessors[v])
+      for (const auto p : cfg.graph.predecessors[v])
         std::erase_if(updated_set,
                       [&](const auto u) { return !updated[p].contains(u); });
       updated_set.insert(v);

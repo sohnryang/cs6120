@@ -15,8 +15,8 @@ void to_json(json &j, const BasicBlock &basic_block) {
 void to_json(json &j, const ControlFlowGraph &cfg) {
   j["args"] = cfg.args;
   j["blocks"] = cfg.blocks;
-  j["successors"] = cfg.successors;
-  j["predecessors"] = cfg.predecessors;
+  j["successors"] = cfg.graph.successors;
+  j["predecessors"] = cfg.graph.predecessors;
   j["label_to_id"] = cfg.label_to_id;
 }
 

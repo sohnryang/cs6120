@@ -101,8 +101,7 @@ ControlFlowGraph ControlFlowGraph::from_function(const Function &function) {
   return {
       .args = function.args,
       .blocks = blocks,
-      .successors = successors,
-      .predecessors = predecessors,
+      .graph = {.successors = successors, .predecessors = predecessors},
       .label_to_id = label_to_id,
   };
 }

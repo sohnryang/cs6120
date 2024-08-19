@@ -109,8 +109,7 @@ ControlFlowGraph optimize_single_step(const ControlFlowGraph &cfg) {
   return {
       .args = cfg.args,
       .blocks = blocks,
-      .successors = cfg.successors,
-      .predecessors = cfg.predecessors,
+      .graph = cfg.graph,
       .label_to_id = cfg.label_to_id,
   };
 }

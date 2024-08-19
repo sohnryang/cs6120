@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bril_types.hh"
+#include "graph.hh"
 
 #include <cstddef>
 #include <optional>
@@ -19,8 +20,7 @@ struct BasicBlock {
 struct ControlFlowGraph {
   std::vector<Argument> args;
   std::vector<BasicBlock> blocks;
-  std::vector<std::vector<std::size_t>> successors;
-  std::vector<std::vector<std::size_t>> predecessors;
+  DenseGraph graph;
   std::unordered_map<std::string, std::size_t> label_to_id;
 
   bool operator==(const ControlFlowGraph &) const = default;
