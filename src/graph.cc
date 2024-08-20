@@ -55,11 +55,6 @@ template <> struct std::hash<SparseAdjacencyList> {
   }
 };
 
-void to_json(json &j, const SparseAdjacencyList &sparse_adj_list) {
-  for (const auto &p : sparse_adj_list)
-    j[fmt::format("{}", p.first)] = p.second;
-}
-
 void to_json(json &j, const SparseGraph &sparse_graph) {
   j["successors"] = sparse_graph.successors;
   j["predecessors"] = sparse_graph.predecessors;
