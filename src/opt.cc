@@ -3,6 +3,7 @@
 #include "dom.hh"
 #include "dump_cfg.hh"
 #include "local_dce.hh"
+#include "natural_loop.hh"
 #include "pass.hh"
 
 #include <cstdlib>
@@ -26,6 +27,7 @@ static const std::unordered_map<std::string, Pass<ControlFlowGraph>>
         {"local_dce", std::make_shared<LocalDeadCodeElimination>()},
         {"dump_cfg", std::make_shared<DumpControlFlowGraph>()},
         {"dom", std::make_shared<DominatorAnalysis>()},
+        {"natural_loop", std::make_shared<NaturalLoopAnalysis>()},
 };
 
 int main(int argc, char *argv[]) {
