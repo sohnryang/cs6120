@@ -5,6 +5,7 @@
 #include "local_dce.hh"
 #include "natural_loop.hh"
 #include "pass.hh"
+#include "reaching_def.hh"
 
 #include <cstdlib>
 #include <exception>
@@ -28,6 +29,7 @@ static const std::unordered_map<std::string, Pass<ControlFlowGraph>>
         {"dump_cfg", std::make_shared<DumpControlFlowGraph>()},
         {"dom", std::make_shared<DominatorAnalysis>()},
         {"natural_loop", std::make_shared<NaturalLoopAnalysis>()},
+        {"reaching_def", std::make_shared<ReachingDefinitionAnalysis>()},
 };
 
 int main(int argc, char *argv[]) {
